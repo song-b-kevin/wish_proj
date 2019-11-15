@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container p-4 ">
+        <header class="row justify-content-around mb-4">
+            <h2 class="col-8">Hello, {{ user.first_name }}!</h2>
+            <div class="col-4 text-right">
+                <a href="/user/logout" class="mx-1">Logout</a>
+                <a href="/wishes/stats" class="mx-1"><button class="btn btn-secondary">View stats</button></a>
+                <a href="/wishes/new" class="ml-1"><button class="btn btn-secondary">Make a wish!</button></a>
+            </div>
+        </header>
+    </div>
+    <main class="container px-4 mb-4">
+        <div class="row px-4">
+            <h3>Your wish list:</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Date added</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for wish in wish_list reversed %}
+                    <tr>
+                        <td>{{ wish.item.name }}</td>
+                        <td>{{ wish.created_at }}</td>
+                        <td>
+                            <ol class="breadcrumb m-0 p-0 bg-white">
+                                <li class="breadcrumb-item"><a href="/wishes/{{ wish.id }}/remove" name="wish_id"
+                                        value="{{ wish.id }}">Remove</a></li>
+                                <li class="breadcrumb-item"><a href="/wishes/edit/{{ wish.id }}">Edit</a></li>
+                                <li class="breadcrumb-item"><a href="/wishes/{{ wish.id }}/grant">Granted!</a></li>
+                            </ol>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row px-4">
+            <h3>Granted wishes:</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Wisher</th>
+                        <th>Date added</th>
+                        <th>Date granted</th>
+                        <th>Likes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for wish in granted_list reversed %}
+                    <tr>
+                        <td>{{ wish.item.name }}</td>
+                        <td>{{ wish.user.first_name }}</td>
+                        <td>{{ wish.created_at }}</td>
+                        <td>{{ wish.granted_date }}</td>
+                        <td>{{ wish.likes.all.count }}</td>
+                        {% if user.first_name != wish.user.first_name and user not in wish.likes.all%}
+                        <td>
+                            <a href="/wishes/{{ wish.id }}/like">Like</a>
+                        </td>
+                        {% elif user in wish.likes.all %}
+                        <td>
+                            <a href="/wishes/{{ wish.id }}/unlike">Unlike</a>
+                        </td>
+                        {% else %}
+                        <td></td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+
+</html>
